@@ -23,7 +23,7 @@ func NewSocket(netType int) Socket {
 }
 
 // Bind to a local IP and socket
-func Bind(sock Socket, ip net.IP, port int) error {
+func (sock Socket) Bind(ip net.IP, port int) error {
 
 	if len(ip) == 4 {
 		// ipv4
@@ -43,11 +43,11 @@ func Bind(sock Socket, ip net.IP, port int) error {
 	}
 }
 
-func Listen(sock Socket) error {
+func (sock Socket) Listen() error {
 	return chkSrtError(int(C.srt_listen(C.SRTSOCKET(sock.sockid), C.int(1))))
 }
 
-func Accept(sock Socket) (net.IP, int, Socket, error) {
+func (sock Socket) Accept() (net.IP, int, Socket, error) {
 
 	// TODO: IPv6?
 	sockaddr := C.struct_sockaddr_in{}
@@ -63,7 +63,7 @@ func Accept(sock Socket) (net.IP, int, Socket, error) {
 
 }
 
-func Connect(sock Socket, ip net.IP, port int) (error) {
+func (sock Socket) Connect(ip net.IP, port int) (error) {
 	
 	if len(ip) == 4 {
 		
@@ -79,11 +79,11 @@ func Connect(sock Socket, ip net.IP, port int) (error) {
 }
 
 
-func Close(sock Socket) error {
+func (sock Socket) Close() error {
 	return chkSrtError(int(C.srt_close(C.SRTSOCKET(sock.sockid))))
 }
 
-func GetSockOpt(sock Socket, opt int) ([]byte, error) {
+func (sock Socket) GetSockOpt(opt int) ([]byte, error) {
 	var buffer [128]byte
 	var addrlen C.int
 	
@@ -92,17 +92,32 @@ func GetSockOpt(sock Socket, opt int) ([]byte, error) {
 	return buffer[: int(addrlen)], chkSrtError(errInt)
 }
 
-func SetSockOpt(sock Socket, opt int, data []byte) error {
+func (sock Socket) SetSockOpt(opt int, data []byte) error {
 	return chkSrtError(int(C.srt_setsockopt(C.SRTSOCKET(sock.sockid), C.int(0), C.SRT_SOCKOPT(opt), unsafe.Pointer(&data), C.int(len(data)))))
 }
 
+// Helper function for setting int options
+func (sock Socket) SetIntSockOpt(opt int, value int) error {
+    cValue := C.int(value)
+    
+	return chkSrtError(int(C.srt_setsockopt(C.SRTSOCKET(sock.sockid), C.int(0), C.SRT_SOCKOPT(opt), unsafe.Pointer(&cValue), C.sizeof_int)))
+}
+
+func (sock Socket) SetBoolSockOpt(opt int, value bool) error {
+    if value {
+        return sock.SetIntSockOpt(opt, 1)
+    } else {
+        return sock.SetIntSockOpt(opt, 0)
+    }
+}
+
 // Data over 1316 bytes will be discarded
-func SendMsg(sock Socket, data []byte) error {
+func (sock Socket) SendMsg(data []byte) error {
 	return chkSrtError(int(C.srt_sendmsg(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&data)), C.int(len(data)), C.int(-1), C.int(0))))
 }
 
 // Data over 1316 bytes will be discarded
-func SendMsgTimestamped(sock Socket, data []byte, timestamp time.Time) error {
+func (sock Socket) SendMsgTimestamped(data []byte, timestamp time.Time) error {
 	
 	msgCtrl := C.struct_SRT_MsgCtrl_{}
 	msgCtrl.srctime = C.uint64_t(timestamp.UnixNano() / 1000) // it accepts usec
@@ -110,7 +125,7 @@ func SendMsgTimestamped(sock Socket, data []byte, timestamp time.Time) error {
 	return chkSrtError(int(C.srt_sendmsg2(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&data)), C.int(len(data)), &msgCtrl))) 
 }
 
-func RecvMsg(sock Socket) ([]byte, time.Time, error) {
+func (sock Socket) RecvMsg() ([]byte, time.Time, error) {
 	var buffer [1316]byte // that is the max SRT payload size
 	
 	msgCtrl := C.struct_SRT_MsgCtrl_{}

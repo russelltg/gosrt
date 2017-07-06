@@ -32,7 +32,7 @@ func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
 	sockaddr.sin_port = C.in_port_t(C.htons(C.uint16_t(port)))
 
 	// set it
-	C.memcpy(unsafe.Pointer(&sockaddr.sin_addr), unsafe.Pointer(&ip), C.size_t(4))
+	C.memcpy(unsafe.Pointer(&sockaddr.sin_addr), unsafe.Pointer(&ip[0]), C.size_t(4))
 
 	return sockaddr
 
@@ -50,7 +50,7 @@ func sockaddrFromIpPort6(ip net.IP,  port int) C.struct_sockaddr_in6 {
 	sockaddr.sin6_port = C.in_port_t(C.htons(C.uint16_t(port)))
 
 	// set it
-	C.memcpy(unsafe.Pointer(&sockaddr.sin6_addr), unsafe.Pointer(&ip), C.size_t(16))
+	C.memcpy(unsafe.Pointer(&sockaddr.sin6_addr), unsafe.Pointer(&ip[0]), C.size_t(16))
 
 	return sockaddr
 }
