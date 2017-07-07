@@ -2,14 +2,12 @@ package gosrt
 
 // #cgo pkg-config: srt
 // #include <srt/srt.h>
-// #if !defined WIN32 && !defined _WIN32
-// #	include <arpa/inet.h>
-// #endif
 import "C"
 
 import "net"
 import "unsafe"
 import "errors"
+import "encoding/binary"
 
 const (
 	INET_4 = C.AF_INET
@@ -36,8 +34,15 @@ func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
 	// zero
 	C.memset(unsafe.Pointer(&sockaddr), C.int(0), C.sizeof_struct_sockaddr_in)
 
+	var noPortBytes [2]byte
+	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
+	
+	var noPort C.uint16_t;
+	
+	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
+	
 	sockaddr.sin_family = C.sa_family_t(INET_4)
-	sockaddr.sin_port = C.in_port_t(C.htons(C.uint16_t(port)))
+	sockaddr.sin_port = C.in_port_t(noPort)
 
 	// set it
 	C.memcpy(unsafe.Pointer(&sockaddr.sin_addr), unsafe.Pointer(&ip[0]), C.size_t(4))
