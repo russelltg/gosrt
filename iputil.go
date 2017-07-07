@@ -35,7 +35,7 @@ func sockaddrFromIpPort(ip net.IP, port int) C.struct_sockaddr_in {
 	C.memset(unsafe.Pointer(&sockaddr), C.int(0), C.sizeof_struct_sockaddr_in)
 
 	var noPortBytes [2]byte
-	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
+	binary.BigEndian.PutUint16(noPortBytes[:], uint16(port))
 
 	var noPort C.uint16_t
 
@@ -64,7 +64,7 @@ func sockaddrFromIpPort6(ip net.IP, port int) C.struct_sockaddr_in6 {
 	C.memset(unsafe.Pointer(&sockaddr), C.int(0), C.sizeof_struct_sockaddr_in6)
 
 	var noPortBytes [2]byte
-	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
+	binary.BigEndian.PutUint16(noPortBytes[:], uint16(port))
 
 	var noPort C.uint16_t
 
