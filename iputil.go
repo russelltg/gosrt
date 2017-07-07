@@ -60,12 +60,20 @@ func sockaddrFromIpPort6(ip net.IP,  port int) C.struct_sockaddr_in6 {
     
 	// create sockaddr
 	sockaddr := C.struct_sockaddr_in6{}
-
+	
 	// zero
 	C.memset(unsafe.Pointer(&sockaddr), C.int(0), C.sizeof_struct_sockaddr_in6)
 
+	var noPortBytes [2]byte
+	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
+	
+	var noPort C.uint16_t;
+	
+	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
+	
+	
 	sockaddr.sin6_family = C.sa_family_t(INET_6)
-	sockaddr.sin6_port = C.in_port_t(C.htons(C.uint16_t(port)))
+	sockaddr.sin6_port = C.in_port_t(noPort)
 
 	// set it
 	C.memcpy(unsafe.Pointer(&sockaddr.sin6_addr), unsafe.Pointer(&ip[0]), C.size_t(16))
