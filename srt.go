@@ -113,7 +113,7 @@ func (sock Socket) SetBoolSockOpt(opt int, value bool) error {
 
 // Data over 1316 bytes will be discarded
 func (sock Socket) SendMsg(data []byte) error {
-	return chkSrtError(int(C.srt_sendmsg(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&data)), C.int(len(data)), C.int(-1), C.int(0))))
+	return chkSrtError(int(C.srt_sendmsg(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&data[0])), C.int(len(data)), C.int(-1), C.int(0))))
 }
 
 // Data over 1316 bytes will be discarded
@@ -130,10 +130,15 @@ func (sock Socket) RecvMsg() ([]byte, time.Time, error) {
 	
 	msgCtrl := C.struct_SRT_MsgCtrl_{}
 	
-	errInt := int(C.srt_recvmsg2(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&buffer)), C.int(len(buffer)), &msgCtrl))
+	size := int(C.srt_recvmsg2(C.SRTSOCKET(sock.sockid), (*C.char)(unsafe.Pointer(&buffer[0])), C.int(len(buffer)), &msgCtrl))
 	
+    err := chkSrtError(size)
+    if err != nil {
+      return nil, time.Time{}, err
+    }
+    
 	// convert back to nsec
-	return buffer[:], time.Unix(0, int64(msgCtrl.srctime) * 1000), chkSrtError(errInt)
+	return buffer[: size], time.Unix(0, int64(msgCtrl.srctime) * 1000), chkSrtError(size)
 }
 
 

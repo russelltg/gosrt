@@ -5,7 +5,7 @@ import "net"
 import "fmt"
 
 func main() {
-	bindSock := gosrt.NewSocket(gosrt.INET_4)
+	bindSock := gosrt.NewSocket(gosrt.INET_6)
 	
 	bindSock.SetBoolSockOpt(gosrt.OPT_TSBPDMODE, true)
 	
@@ -16,6 +16,7 @@ func main() {
 	
 	ipv4 := ips[0]
 	
+	fmt.Printf("IP: %s\n", ipv4.String())
 	
 	// bind to localhsot port 1234
 	err = bindSock.Bind(ipv4, 1234)
@@ -49,7 +50,7 @@ func main() {
 			panic(err)
 		}
 		
-		fmt.Printf("Packet recieved: %s\n", data)
+		fmt.Printf("Packet recieved: Size: %i: %s\n", len(data), data)
 	}
 	
 }

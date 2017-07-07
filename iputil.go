@@ -15,7 +15,7 @@ const (
 
 // Check for SRT errors
 func chkSrtError(errorCode int) error {
-	if errorCode != -1 {
+	if errorCode == -1 {
 		return errors.New(C.GoString(C.srt_getlasterror_str()))
 	}
 	return nil

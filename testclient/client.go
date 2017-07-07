@@ -2,9 +2,10 @@ package main
 
 import "github.com/russelltg/gosrt"
 import "net"
+import "fmt"
 
 func main() {
-	sock := gosrt.NewSocket(gosrt.INET_4)
+	sock := gosrt.NewSocket(gosrt.INET_6)
 	
 	sock.SetBoolSockOpt(gosrt.OPT_TSBPDMODE, true)
     sock.SetBoolSockOpt(gosrt.OPT_SENDER, true)
@@ -21,7 +22,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	
+	fmt.Println("Connected!")
 	
 	// send
 	for {
