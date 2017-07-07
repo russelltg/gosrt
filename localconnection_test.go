@@ -31,11 +31,6 @@ func TestLocalConnection(t *testing.T) {
 			t.Error("Failed to bind sock to 9761", err)
 		}
 		
-		err = serverBindSock.Listen()
-		if err != nil {
-			t.Error("Failed to listen on bindsock", err)
-		}
-		
 		_, _, sock, err := serverBindSock.Accept()
 		if err != nil {
 			t.Error("Failed to accept", err)

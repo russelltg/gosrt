@@ -24,7 +24,10 @@ func NewSocket(netType int) (Socket, error){
 	return ret, chkSrtError(ret.sockid)
 }
 
-// Bind to a local IP and socket
+// Bind binds to a local IP and socket
+// If this socket was created to be an ipv4 socket, then, ip must be an ipv4 address, 
+// and likewise for ipv6
+// This will fail if port has already been bound on this machine
 func (sock Socket) Bind(ip net.IP, port int) error {
 
 	if len(ip) == 4 {
@@ -45,6 +48,7 @@ func (sock Socket) Bind(ip net.IP, port int) error {
 	}
 }
 
+// Listen sets the listen flag in SRT
 func (sock Socket) Listen() error {
 	return chkSrtError(int(C.srt_listen(C.SRTSOCKET(sock.sockid), C.int(1))))
 }
@@ -65,6 +69,8 @@ func (sock Socket) Accept() (net.IP, int, Socket, error) {
 
 }
 
+// Connect connects to another SRT socket
+// The other socket must be bound to the port
 func (sock Socket) Connect(ip net.IP, port int) (error) {
 	
 	if len(ip) == 4 {

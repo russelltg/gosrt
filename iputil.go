@@ -2,6 +2,9 @@ package gosrt
 
 // #cgo pkg-config: srt
 // #include <srt/srt.h>
+// #if !defined WIN32 && !defined _WIN32
+// #	include <arpa/inet.h>
+// #endif
 import "C"
 
 import "net"
