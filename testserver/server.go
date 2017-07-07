@@ -14,7 +14,7 @@ func main() {
 	
 	bindSock.SetBoolSockOpt(gosrt.OPT_TSBPDMODE, true)
 	
-	ips, err := net.LookupIP("localhost")
+	ips, err := net.LookupIP("127.0.0.1")
 	if err != nil {
 		panic(err)
 	}

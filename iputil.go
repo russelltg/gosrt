@@ -22,12 +22,12 @@ func chkSrtError(errorCode int) error {
 	return nil
 }
 
-func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
-    
-    if len(ip) != 4 {
-        panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
-    }
-    
+func sockaddrFromIpPort(ip net.IP, port int) C.struct_sockaddr_in {
+
+	if len(ip) != 4 {
+		panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
+	}
+
 	// create sockaddr
 	sockaddr := C.struct_sockaddr_in{}
 
@@ -36,11 +36,11 @@ func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
 
 	var noPortBytes [2]byte
 	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
-	
-	var noPort C.uint16_t;
-	
+
+	var noPort C.uint16_t
+
 	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
-	
+
 	sockaddr.sin_family = C.sa_family_t(INET_4)
 	sockaddr.sin_port = C.in_port_t(noPort)
 
@@ -51,27 +51,25 @@ func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
 
 }
 
-func sockaddrFromIpPort6(ip net.IP,  port int) C.struct_sockaddr_in6 {
+func sockaddrFromIpPort6(ip net.IP, port int) C.struct_sockaddr_in6 {
 
-    
-    if len(ip) != 4 {
-        panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
-    }
-    
+	if len(ip) != 4 {
+		panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
+	}
+
 	// create sockaddr
 	sockaddr := C.struct_sockaddr_in6{}
-	
+
 	// zero
 	C.memset(unsafe.Pointer(&sockaddr), C.int(0), C.sizeof_struct_sockaddr_in6)
 
 	var noPortBytes [2]byte
 	binary.LittleEndian.PutUint16(noPortBytes[:], uint16(port))
-	
-	var noPort C.uint16_t;
-	
+
+	var noPort C.uint16_t
+
 	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
-	
-	
+
 	sockaddr.sin6_family = C.sa_family_t(INET_6)
 	sockaddr.sin6_port = C.in_port_t(noPort)
 

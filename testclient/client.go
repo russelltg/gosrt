@@ -6,12 +6,15 @@ import "fmt"
 import "time"
 
 func main() {
-	sock := gosrt.NewSocket(gosrt.INET_4)
+	sock, err := gosrt.NewSocket(gosrt.INET_4)
+	if err != nil {
+		panic(err)
+	}
 	
 	sock.SetBoolSockOpt(gosrt.OPT_TSBPDMODE, true)
     sock.SetBoolSockOpt(gosrt.OPT_SENDER, true)
 	
-	ips, err := net.LookupIP("192.168.11.89")
+	ips, err := net.LookupIP("127.0.0.1")
 	if err != nil {
 		panic(err)
 	}
