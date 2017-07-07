@@ -1,11 +1,16 @@
 package main
 
-import "github.com/russelltg/gosrt"
-import "net"
-import "fmt"
+import (
+	"github.com/russelltg/gosrt"
+	"net"
+	"fmt"
+)
 
 func main() {
-	bindSock := gosrt.NewSocket(gosrt.INET_6)
+	bindSock, err := gosrt.NewSocket(gosrt.INET_4)
+	if err != nil {
+		panic(err)
+	}
 	
 	bindSock.SetBoolSockOpt(gosrt.OPT_TSBPDMODE, true)
 	
@@ -14,12 +19,13 @@ func main() {
 		panic(err)
 	}
 	
-	ipv4 := ips[0]
+	ipv4 := ips[0].To4()
 	
-	fmt.Printf("IP: %s\n", ipv4.String())
+	// print it out
+	fmt.Printf("IP %s:%d\n", ipv4.String(), 7654)
 	
-	// bind to localhsot port 1234
-	err = bindSock.Bind(ipv4, 1234)
+	// bind to localhsot port 7654
+	err = bindSock.Bind(ipv4, 7654)
 	if err != nil {
 		panic(err)
 	}

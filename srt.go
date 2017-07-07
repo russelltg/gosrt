@@ -4,9 +4,11 @@ package gosrt
 // #include <srt/srt.h>
 import "C"
 
-import "net"
-import "unsafe"
-import "time"
+import (
+	"net"
+	"unsafe"
+	"time"
+)
 
 type Socket struct {
 	sockid int
@@ -14,12 +16,12 @@ type Socket struct {
 
 // NewSocket creates a new socket
 // newType is either INET_4 or INET_6, which are ipv4 and ipv6 repsectively
-func NewSocket(netType int) Socket {
+func NewSocket(netType int) (Socket, error){
 	ret := Socket{}
 
 	ret.sockid = int(C.srt_socket(C.int(netType), C.int(C.SOCK_DGRAM), C.int(0)))
 
-	return ret
+	return ret, chkSrtError(ret.sockid)
 }
 
 // Bind to a local IP and socket

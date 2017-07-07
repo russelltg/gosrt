@@ -22,6 +22,11 @@ func chkSrtError(errorCode int) error {
 }
 
 func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
+    
+    if len(ip) != 4 {
+        panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
+    }
+    
 	// create sockaddr
 	sockaddr := C.struct_sockaddr_in{}
 
@@ -40,6 +45,11 @@ func sockaddrFromIpPort(ip net.IP,  port int) C.struct_sockaddr_in {
 
 func sockaddrFromIpPort6(ip net.IP,  port int) C.struct_sockaddr_in6 {
 
+    
+    if len(ip) != 4 {
+        panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
+    }
+    
 	// create sockaddr
 	sockaddr := C.struct_sockaddr_in6{}
 
