@@ -10,8 +10,11 @@ import "errors"
 import "encoding/binary"
 
 const (
-	INET_4 = C.AF_INET
-	INET_6 = C.AF_INET6
+	// IPV4 socket
+	Ipv4 = C.AF_INET
+
+	// IPV6 socket
+	Ipv6 = C.AF_INET6
 )
 
 // Check for SRT errors
@@ -22,7 +25,7 @@ func chkSrtError(errorCode int) error {
 	return nil
 }
 
-func sockaddrFromIpPort(ip net.IP, port int) C.struct_sockaddr_in {
+func sockaddrFromIPPort(ip net.IP, port int) C.struct_sockaddr_in {
 
 	if len(ip) != 4 {
 		panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
@@ -41,7 +44,7 @@ func sockaddrFromIpPort(ip net.IP, port int) C.struct_sockaddr_in {
 
 	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
 
-	sockaddr.sin_family = C.sa_family_t(INET_4)
+	sockaddr.sin_family = C.sa_family_t(C.AF_INET)
 	sockaddr.sin_port = C.in_port_t(noPort)
 
 	// set it
@@ -51,9 +54,9 @@ func sockaddrFromIpPort(ip net.IP, port int) C.struct_sockaddr_in {
 
 }
 
-func sockaddrFromIpPort6(ip net.IP, port int) C.struct_sockaddr_in6 {
+func sockaddrFromIPPort6(ip net.IP, port int) C.struct_sockaddr_in6 {
 
-	if len(ip) != 4 {
+	if len(ip) != 16 {
 		panic("Internal SRT error: cannot get sockaddr ipv4 from an ipv6 IP")
 	}
 
@@ -70,7 +73,7 @@ func sockaddrFromIpPort6(ip net.IP, port int) C.struct_sockaddr_in6 {
 
 	C.memcpy(unsafe.Pointer(&noPort), unsafe.Pointer(&noPortBytes[0]), 2)
 
-	sockaddr.sin6_family = C.sa_family_t(INET_6)
+	sockaddr.sin6_family = C.sa_family_t(C.AF_INET6)
 	sockaddr.sin6_port = C.in_port_t(noPort)
 
 	// set it
