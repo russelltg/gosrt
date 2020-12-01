@@ -10,7 +10,7 @@ Go bindings for the [srt](https://github.com/haivision/srt) network protocol (us
 
 ### Installing SRT
 
-Currently, SRT doens't install its headers correctly, so you must checkout the `addHeaders` branch from my fork at https://github.com/russelltg/srt:
+Currently, SRT doesn't install its headers correctly, so you must checkout the `addHeaders` branch from my fork at https://github.com/russelltg/srt:
 
 ```bash
 git clone https://github.com/russelltg/srt -b addHeaders
